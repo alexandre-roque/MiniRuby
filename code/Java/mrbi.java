@@ -12,12 +12,10 @@ public class mrbi {
 
         try (LexicalAnalysis l = new LexicalAnalysis(args[0])) {
             /*
-            // O código a seguir é dado para testar o interpretador.
-            // TODO: descomentar depois que o analisador léxico estiver OK.
-            SyntaticAnalysis s = new SyntaticAnalysis(l);
-            Command c = s.start();
-            c.execute();
-            */
+             * // O código a seguir é dado para testar o interpretador. // TODO: descomentar
+             * depois que o analisador léxico estiver OK. SyntaticAnalysis s = new
+             * SyntaticAnalysis(l); Command c = s.start(); c.execute();
+             */
 
             // O código a seguir é usado apenas para testar o analisador léxico.
             // TODO: depois de pronto, comentar o código abaixo.
@@ -44,8 +42,6 @@ public class mrbi {
     }
 
     private static boolean checkType(TokenType type) {
-        return !(type == TokenType.END_OF_FILE ||
-                 type == TokenType.INVALID_TOKEN ||
-                 type == TokenType.UNEXPECTED_EOF);
+        return !(type == TokenType.END_OF_FILE || type == TokenType.INVALID_TOKEN || type == TokenType.UNEXPECTED_EOF);
     }
 }
