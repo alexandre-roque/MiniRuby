@@ -1,8 +1,17 @@
 package syntatic;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import interpreter.command.BlocksCommand;
 import interpreter.command.Command;
+import interpreter.command.OutputCommand;
+import interpreter.command.OutputOp;
+import interpreter.expr.ConstExpr;
+import interpreter.expr.Expr;
+import interpreter.value.IntegerValue;
+import interpreter.value.StringValue;
 import lexical.Lexeme;
 import lexical.LexicalAnalysis;
 import lexical.LexicalException;
@@ -19,19 +28,21 @@ public class SyntaticAnalysis {
     }
 
     public Command start() throws LexicalException, IOException {
-        procCode();
+        Command cmd = procCode();
         eat(TokenType.END_OF_FILE);
-
-        return null;
+    
+        return cmd;
     }
 
     private void advance() throws LexicalException, IOException {
-        System.out.println("Advanced (\"" + current.token + "\", " + current.type + ")");
+        // System.out.println("Advanced (\"" + current.token + "\", " +
+        //     current.type + ")");
         current = lex.nextToken();
     }
 
     private void eat(TokenType type) throws LexicalException, IOException {
-        System.out.println("Expected (..., " + type + "), found (\"" + current.token + "\", " + current.type + ")");
+        // System.out.println("Expected (..., " + type + "), found (\"" + 
+        //     current.token + "\", " + current.type + ")");
         if (type == current.type) {
             current = lex.nextToken();
         } else {
@@ -58,18 +69,32 @@ public class SyntaticAnalysis {
         System.exit(1);
     }
 
-    // <code> ::= { <cmd> }
-    private void procCode() throws LexicalException, IOException {
-        while (current.type == TokenType.IF || current.type == TokenType.UNLESS || current.type == TokenType.WHILE
-                || current.type == TokenType.UNTIL || current.type == TokenType.FOR || current.type == TokenType.PUTS
-                || current.type == TokenType.PRINT || current.type == TokenType.ID
-                || current.type == TokenType.OPEN_PAR) {
-            procCmd();
+    // <code>     ::= { <cmd> }
+    private BlocksCommand procCode() throws LexicalException, IOException {
+        int line = lex.getLine();
+
+        List<Command> cmds = new ArrayList<>();
+        while (current.type == TokenType.IF ||
+                current.type == TokenType.UNLESS ||
+                current.type == TokenType.WHILE ||
+                current.type == TokenType.UNTIL ||
+                current.type == TokenType.FOR ||
+                current.type == TokenType.PUTS ||
+                current.type == TokenType.PRINT ||
+                current.type == TokenType.ID ||
+                current.type == TokenType.OPEN_PAR) {
+            Command cmd = procCmd();
+            cmds.add(cmd);
         }
+
+        BlocksCommand bcmd = new BlocksCommand(line, cmds);
+        return bcmd;
     }
 
-    // <cmd> ::= <if> | <unless> | <while> | <until> | <for> | <output> | <assign>
-    private void procCmd() throws LexicalException, IOException {
+    // <cmd>      ::= <if> | <unless> | <while> | <until> | <for> | <output> | <assign>
+    private Command procCmd() throws LexicalException, IOException {
+       
+        Command cmd = null;
         if (current.type == TokenType.IF) {
             procIf();
         } else if (current.type == TokenType.UNLESS) {
@@ -81,30 +106,32 @@ public class SyntaticAnalysis {
         } else if (current.type == TokenType.FOR) {
             procFor();
         } else if (current.type == TokenType.PUTS || current.type == TokenType.PRINT) {
-            procOutput();
+            cmd = procOutput();
         } else {
             procAssign();
         }
+
+        return cmd;
     }
 
     // <if> ::= if <boolexpr> [ then ] <code> { elsif <boolexpr> [ then ] <code> } [
-    private void procIf() throws LexicalException, IOException {
-        eat(TokenType.IF);
-        procBoolExpr();
-        if (current.type == TokenType.THEN) {
-            advance();
-        }
-        procCode();
-
-        while (current.type == TokenType.ELSIF) {
+        private void procIf() throws LexicalException, IOException {
+            eat(TokenType.IF);
+            procBoolExpr();
             if (current.type == TokenType.THEN) {
                 advance();
             }
-
             procCode();
+    
+            while (current.type == TokenType.ELSIF) {
+                if (current.type == TokenType.THEN) {
+                    advance();
+                }
+    
+                procCode();
+            }
+    
         }
-
-    }
 
     // else [ <code> ] end
     private void procElse() throws LexicalException, IOException {
@@ -133,14 +160,14 @@ public class SyntaticAnalysis {
         eat(TokenType.END);
     }
 
-    // <while> ::= while <boolexpr> [ do ] <code> end
+    // <while>    ::= while <boolexpr> [ do ] <code> end
     private void procWhile() throws LexicalException, IOException {
         eat(TokenType.WHILE);
+
         procBoolExpr();
 
-        if (current.type == TokenType.DO) {
+        if (current.type == TokenType.DO)
             advance();
-        }
 
         procCode();
         eat(TokenType.END);
@@ -174,31 +201,47 @@ public class SyntaticAnalysis {
         eat(TokenType.END);
     }
 
-    // <output> ::= ( puts | print ) [ <expr> ] [ <post> ] ';'
-    private void procOutput() throws LexicalException, IOException {
+    // <output>   ::= ( puts | print ) [ <expr> ] [ <post> ] ';'
+    private OutputCommand procOutput() throws LexicalException, IOException {
+        OutputOp op = null;
         if (current.type == TokenType.PUTS) {
+            op = OutputOp.PutsOp;
             advance();
         } else if (current.type == TokenType.PRINT) {
+            op = OutputOp.PrintOp;
             advance();
         } else {
             showError();
         }
 
-        if (current.type == TokenType.ADD || current.type == TokenType.SUB || current.type == TokenType.INTEGER
-                || current.type == TokenType.STRING || current.type == TokenType.OPEN_BRA
-                || current.type == TokenType.GETS || current.type == TokenType.RAND || current.type == TokenType.ID
-                || current.type == TokenType.OPEN_PAR) {
-            procExpr();
+        int line = lex.getLine();
+
+        Expr expr = null;
+        if (current.type == TokenType.ADD ||
+                current.type == TokenType.SUB ||
+                current.type == TokenType.INTEGER ||
+                current.type == TokenType.STRING ||
+                current.type == TokenType.OPEN_BRA ||
+                current.type == TokenType.GETS ||
+                current.type == TokenType.RAND ||
+                current.type == TokenType.ID ||
+                current.type == TokenType.OPEN_PAR) {
+            expr = procExpr();
         }
 
+        /*
         if (current.type == TokenType.IF || current.type == TokenType.UNLESS) {
             procPost();
         }
+        */
 
         eat(TokenType.SEMI_COLON);
+
+        OutputCommand ocmd = new OutputCommand(line, op, expr);
+        return ocmd;
     }
 
-    // <assign> ::= <access> { ',' <access> } '=' <expr> { ',' <expr> } [ <post> ] ';'
+    // <assign>   ::= <access> { ',' <access> } '=' <expr> { ',' <expr> } [ <post> ] ';'
     private void procAssign() throws LexicalException, IOException {
         procAccess();
         while (current.type == TokenType.COMMA) {
@@ -222,7 +265,7 @@ public class SyntaticAnalysis {
         eat(TokenType.SEMI_COLON);
     }
 
-    // <post> ::= ( if | unless ) <boolexpr>
+    // <post>     ::= ( if | unless ) <boolexpr>
     private void procPost() throws LexicalException, IOException {
         if (current.type == TokenType.IF) {
             advance();
@@ -267,49 +310,66 @@ public class SyntaticAnalysis {
         procExpr();
     }
 
-    // <expr> ::= <arith> [ ( '..' | '...' ) <arith> ]
-    private void procExpr() throws LexicalException, IOException {
-        procArith();
+    // <expr>     ::= <arith> [ ( '..' | '...' ) <arith> ]
+    private Expr procExpr() throws LexicalException, IOException {
+        Expr expr = procArith();
 
-        if (current.type == TokenType.RANGE_WITH || current.type == TokenType.RANGE_WITHOUT) {
+        if (current.type == TokenType.RANGE_WITH ||
+                current.type == TokenType.RANGE_WITHOUT) {
             advance();
+
             procArith();
-        } else {
-            showError();
         }
+
+        return expr;
     }
 
-    // <arith> ::= <term> { ('+' | '-') <term> }
-    private void procArith() throws LexicalException, IOException {
-        procTerm();
+    // <arith>    ::= <term> { ('+' | '-') <term> }
+    private Expr procArith() throws LexicalException, IOException {
+        Expr expr = procTerm();
 
         while (current.type == TokenType.ADD || current.type == TokenType.SUB) {
             advance();
             procTerm();
         }
+
+        return expr;
     }
 
-    // <term> ::= <power> { ('*' | '/' | '%') <power> }
-    private void procTerm() throws LexicalException, IOException {
-        procPower();
-        while (current.type == TokenType.MUL || current.type == TokenType.DIV || current.type == TokenType.MOD) {
+    // <term>     ::= <power> { ('*' | '/' | '%') <power> }
+    private Expr procTerm() throws LexicalException, IOException {
+        Expr expr = procPower();
+
+        while (current.type == TokenType.MUL || current.type == TokenType.DIV ||
+                current.type == TokenType.MOD) {
             advance();
             procPower();
         }
+
+        return expr;
     }
 
-    // <power> ::= <factor> { '**' <factor> }
-    private void procPower() throws LexicalException, IOException {
-        procFactor();
+    // <power>    ::= <factor> { '**' <factor> }
+    private Expr procPower() throws LexicalException, IOException {
+        Expr expr = procFactor();
 
         while (current.type == TokenType.EXP) {
             advance();
             procFactor();
         }
+
+        return expr;
     }
 
+    // <factor>   ::= [ '+' | '-' ] ( <const> | <input> | <access> ) [ <function> ]
+    private Expr procFactor() throws LexicalException, IOException {
+        return procConst();
+    }
+    
+    /*
     // <factor> ::= [ '+' | '-' ] ( <const> | <input> | <access> ) [ <function> ] //duvida
-    private void procFactor() throws LexicalException, IOException {
+    private Expr procFactor() throws LexicalException, IOException {
+        Expr expr = null;
 
         if (current.type == TokenType.ADD || current.type == TokenType.SUB) {
             advance();
@@ -320,19 +380,24 @@ public class SyntaticAnalysis {
         }
         if (current.type == TokenType.DOT) {
             advance();
-            procFunction();
+            expr =  procFunction();
         }
+        return procConst();
     }
+    */
+    
 
-    // <const> ::= <integer> | <string> | <array>
-    private void procConst() throws LexicalException, IOException {
+    // <const>    ::= <integer> | <string> | <array>
+    private Expr procConst() throws LexicalException, IOException {
+        Expr expr = null;
         if (current.type == TokenType.INTEGER) {
-            procInteger();
+            expr = procInteger();
         } else if (current.type == TokenType.STRING) {
-            procString();
+            expr = procString();
         } else {
             procArray();
         }
+        return expr;
     }
 
     // <input> ::= gets | rand
@@ -346,14 +411,19 @@ public class SyntaticAnalysis {
         }
     }
 
-    // <array> ::= '[' [ <expr> { ',' <expr> } ] ']'
+    // <array>    ::= '[' [ <expr> { ',' <expr> } ] ']'
     private void procArray() throws LexicalException, IOException {
         eat(TokenType.OPEN_BRA);
 
-        if (current.type == TokenType.ADD || current.type == TokenType.SUB || current.type == TokenType.INTEGER
-                || current.type == TokenType.STRING || current.type == TokenType.OPEN_BRA
-                || current.type == TokenType.GETS || current.type == TokenType.RAND || current.type == TokenType.ID
-                || current.type == TokenType.OPEN_PAR) {
+        if (current.type == TokenType.ADD ||
+            current.type == TokenType.SUB ||
+            current.type == TokenType.INTEGER ||
+            current.type == TokenType.STRING ||
+            current.type == TokenType.OPEN_BRA ||
+            current.type == TokenType.GETS ||
+            current.type == TokenType.RAND ||
+            current.type == TokenType.ID ||
+            current.type == TokenType.OPEN_PAR) {
             procExpr();
 
             while (current.type == TokenType.COMMA) {
@@ -393,12 +463,31 @@ public class SyntaticAnalysis {
 
     }
 
-    private void procInteger() throws LexicalException, IOException {
+    private ConstExpr procInteger() throws LexicalException, IOException {
+        String tmp = current.token;
         eat(TokenType.INTEGER);
+        int line = lex.getLine();
+
+        int n;
+        try {
+            n = Integer.parseInt(tmp);
+        } catch (Exception e) {
+            n = 0;
+        }
+
+        IntegerValue iv = new IntegerValue(n);
+        ConstExpr cexpr = new ConstExpr(line, iv);
+        return cexpr;
     }
 
-    private void procString() throws LexicalException, IOException {
+    private ConstExpr procString() throws LexicalException, IOException {
+        String str = current.token;
         eat(TokenType.STRING);
+        int line = lex.getLine();
+
+        StringValue sv = new StringValue(str);
+        ConstExpr cexpr = new ConstExpr(line, sv);
+        return cexpr;
     }
 
     private void procId() throws LexicalException, IOException {

@@ -18,8 +18,7 @@ public class mrbi {
 
             SyntaticAnalysis s = new SyntaticAnalysis(l);
             Command c = s.start();
-
-            //c.execute();
+            c.execute();
 
             // O código a seguir é usado apenas para testar o analisador léxico.
             // TODO: depois de pronto, comentar o código abaixo.
@@ -37,7 +36,7 @@ public class mrbi {
                     System.out.printf("%02d: Fim de arquivo inesperado\n", l.getLine());
                     break;
                 default:
-                    System.out.printf("(\"%s\", %s)\n", lex.token, lex.type);
+                    //System.out.printf("(\"%s\", %s)\n", lex.token, lex.type);
                     break;
             }
 
