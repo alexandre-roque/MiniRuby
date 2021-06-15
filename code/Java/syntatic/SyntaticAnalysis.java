@@ -241,7 +241,7 @@ public class SyntaticAnalysis {
             advance();
         }
 
-        procEmpExpr();
+        procCmpexpr();
 
         if (current.type == TokenType.AND || current.type == TokenType.OR) {
             advance();
@@ -253,7 +253,7 @@ public class SyntaticAnalysis {
     }
 
     // <cmpexpr> ::= <expr> ( '==' | '!=' | '<' | '<=' | '>' | '>=' | '===' ) <expr>
-    private void procEmpExpr() throws LexicalException, IOException {
+    private void procCmpexpr() throws LexicalException, IOException {
         procExpr();
 
         if (current.type == TokenType.EQUALS || current.type == TokenType.NOT_EQUALS || current.type == TokenType.LOWER
@@ -308,8 +308,7 @@ public class SyntaticAnalysis {
         }
     }
 
-    // <factor> ::= [ '+' | '-' ] ( <const> | <input> | <access> ) [ <function> ]
-    // //duvida
+    // <factor> ::= [ '+' | '-' ] ( <const> | <input> | <access> ) [ <function> ] //duvida
     private void procFactor() throws LexicalException, IOException {
 
         if (current.type == TokenType.ADD || current.type == TokenType.SUB) {
