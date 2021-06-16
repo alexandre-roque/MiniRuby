@@ -2,6 +2,7 @@ package interpreter.command;
 
 
 import interpreter.expr.Expr;
+import interpreter.expr.Variable;
 
 public class ForCommand extends Command {
     private Variable var;
@@ -17,7 +18,7 @@ public class ForCommand extends Command {
 
 
     @Override
-    public void execute() {
+    public void execute() { //TODO
         
     }
 }
