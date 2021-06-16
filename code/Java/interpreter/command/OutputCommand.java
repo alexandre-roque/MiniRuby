@@ -25,9 +25,9 @@ public class OutputCommand extends Command {
     public void execute() {
         if (expr != null) {
             Value<?> v = expr.expr();
-            //System.out.print(v.toString());
+            System.out.print(v.toString());
     
-            if (v instanceof IntegerValue) {
+            /* if (v instanceof IntegerValue) {
                 IntegerValue iv = (IntegerValue) v;
                 int n = iv.value();
                 System.out.print(n);
@@ -37,7 +37,7 @@ public class OutputCommand extends Command {
                 System.out.print(str);
             } else {
                 // ...
-            }
+            }*/ 
         }
 
         if (op == OutputOp.PutsOp)
