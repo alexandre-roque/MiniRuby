@@ -229,11 +229,11 @@ public class SyntaticAnalysis {
             expr = procExpr();
         }
 
-        /*
+        
         if (current.type == TokenType.IF || current.type == TokenType.UNLESS) {
             procPost();
         }
-        */
+        
 
         eat(TokenType.SEMI_COLON);
 
@@ -362,11 +362,11 @@ public class SyntaticAnalysis {
     }
 
     // <factor>   ::= [ '+' | '-' ] ( <const> | <input> | <access> ) [ <function> ]
-    private Expr procFactor() throws LexicalException, IOException {
+    /*private Expr procFactor() throws LexicalException, IOException {
         return procConst();
-    }
+    }*/
     
-    /*
+    
     // <factor> ::= [ '+' | '-' ] ( <const> | <input> | <access> ) [ <function> ] //duvida
     private Expr procFactor() throws LexicalException, IOException {
         Expr expr = null;
@@ -374,17 +374,23 @@ public class SyntaticAnalysis {
         if (current.type == TokenType.ADD || current.type == TokenType.SUB) {
             advance();
         }
-        if (current.type == TokenType.INTEGER || current.type == TokenType.GETS || current.type == TokenType.RAND
-                || current.type == TokenType.ID || current.type == TokenType.OPEN_BRA) {
-            advance();
+
+        if (current.type == TokenType.INTEGER || current.type == TokenType.STRING || current.type == TokenType.OPEN_BRA){
+            expr = procConst();
         }
-        if (current.type == TokenType.DOT) {
-            advance();
-            expr =  procFunction();
+        else if (current.type == TokenType.GETS || current.type == TokenType.RAND){
+            procInput();
         }
-        return procConst();
+        else if (current.type == TokenType.ID || current.type == TokenType.OPEN_PAR){
+            procAccess();
+        }
+        else{
+            showError();
+        }
+
+        return expr;
     }
-    */
+    
     
 
     // <const>    ::= <integer> | <string> | <array>
