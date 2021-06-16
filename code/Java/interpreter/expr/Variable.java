@@ -1,5 +1,7 @@
 package interpreter.expr;
 
+import interpreter.util.Memory;
+import interpreter.value.StringValue;
 import interpreter.value.Value;
 
 public class Variable extends SetExpr{
@@ -18,14 +20,17 @@ public class Variable extends SetExpr{
 
     @Override
     public void setValue(Value<?> value) {
-        // TODO
+        Memory.write(name, value);
     }
 
 
     @Override
     public Value<?> expr() {
-        // TODO 
-        return null;
+        Value<?> value = Memory.read(name);
+        if(value == null){
+            value = new StringValue("");
+        }
+        return value;
     }
     
     
