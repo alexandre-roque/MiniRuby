@@ -20,3 +20,19 @@ public class AssignCommand extends Command{
     }
     
 }
+
+        // AssignCommand
+        // =============
+
+        // se o tamanho da lista left for diferente do tamanho da lista right
+        // abortar com operacao invalida
+
+        // List<Value<?>> temp = percorrer a lista right avaliando as expressoes
+        // i = 0;
+        // percorrer a lista left onde, para cada expr, fazer
+        // se expr não for SetExpr
+        //     abortar com operacao invalida
+
+        // SetExpr sexpr = converter expr
+        // sexpr->setValue(temp[i]);
+        // i++;
