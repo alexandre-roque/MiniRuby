@@ -1,5 +1,11 @@
 package interpreter.expr;
 
+import java.util.Vector;
+
+import interpreter.util.Utils;
+import interpreter.value.ArrayValue;
+import interpreter.value.StringValue;
+import interpreter.value.IntegerValue;
 import interpreter.value.Value;
 
 public class FunctionExpr extends Expr{
@@ -16,8 +22,34 @@ public class FunctionExpr extends Expr{
     public Value<?> expr() {
         Value<?> v = expr.expr();
 
-        if(!(op == FunctionOp.LengthOp)){
-            
+        if((op == FunctionOp.ToIntOp)){
+            if(!(v instanceof StringValue)){
+                Utils.abort(super.getLine());
+            }
+            else{
+                int n;
+                n = Integer.parseInt(v.toString());
+                IntegerValue iv = new IntegerValue(n);
+                v = iv;
+            }
+        }
+        else if((op == FunctionOp.LengthOp)){
+            if(!(v instanceof ArrayValue)){
+                Utils.abort(super.getLine());
+            }
+            else{
+                ArrayValue av;
+                av = (ArrayValue) v;
+                Vector<Value<?>> aux = av.value();
+                int tam = aux.size();
+                IntegerValue auxtam = new IntegerValue(tam);
+                v = auxtam;
+            }
+        }
+        else if((op == FunctionOp.ToStringOp)){
+            String s = v.toString();
+            StringValue sv = new StringValue(s);
+            v = sv;
         }
 
         return v;

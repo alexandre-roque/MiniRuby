@@ -4,7 +4,7 @@ import interpreter.value.Value;
 
 public class BinaryExpr extends Expr{
 
-    protected BinaryExpr(int line, Expr left, BinaryOp op, Expr right) {
+    public BinaryExpr(int line, Expr left, BinaryOp op, Expr right) {
         super(line);
         this.left = left;
         this.op = op;
@@ -18,8 +18,14 @@ public class BinaryExpr extends Expr{
 
     @Override
     public Value<?> expr() {
-        // TODO 
-        return null;
+        Value<?> v = null;
+        if(this.op == BinaryOp.AddOp){
+            
+        }
+        
+
+
+        return v;
     }
     
     

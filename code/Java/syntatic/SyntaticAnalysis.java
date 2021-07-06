@@ -8,8 +8,18 @@ import interpreter.command.BlocksCommand;
 import interpreter.command.Command;
 import interpreter.command.OutputCommand;
 import interpreter.command.OutputOp;
+import interpreter.expr.AccessExpr;
+import interpreter.expr.ArrayExpr;
+import interpreter.expr.BinaryExpr;
+import interpreter.expr.BinaryOp;
 import interpreter.expr.ConstExpr;
+import interpreter.expr.ConvExpr;
+import interpreter.expr.ConvOp;
 import interpreter.expr.Expr;
+import interpreter.expr.FunctionOp;
+import interpreter.expr.FunctionExpr;
+import interpreter.expr.InputExpr;
+import interpreter.expr.InputOp;
 import interpreter.value.IntegerValue;
 import interpreter.value.StringValue;
 import lexical.Lexeme;
@@ -338,26 +348,55 @@ public class SyntaticAnalysis {
 
     // <term>     ::= <power> { ('*' | '/' | '%') <power> }
     private Expr procTerm() throws LexicalException, IOException {
-        Expr expr = procPower();
+        BinaryOp op = null;
+        Expr expr = null;
+        Expr right = null;
+        Expr left = procPower();
+        int line;
 
         while (current.type == TokenType.MUL || current.type == TokenType.DIV ||
                 current.type == TokenType.MOD) {
+            line = lex.getLine();
+            if(current.type == TokenType.MUL){
+                op = BinaryOp.MultOp;
+            }
+            else if(current.type == TokenType.DIV){
+                op = BinaryOp.DivOp;
+            }
+            else if(current.type == TokenType.MOD){
+                op = BinaryOp.ModOp;
+            }
             advance();
-            procPower();
-        }
+            right = procPower();
 
+            BinaryExpr binaryexpr = new BinaryExpr(line,left,op,right);
+            left = binaryexpr;
+        }
+        expr = left;
         return expr;
     }
 
     // <power>    ::= <factor> { '**' <factor> }
     private Expr procPower() throws LexicalException, IOException {
-        Expr expr = procFactor();
+        Expr expr = null;
+        BinaryOp op = null;
+        Expr left, right = null;
+        int line;
+
+
+        left = procFactor();
 
         while (current.type == TokenType.EXP) {
+            line = lex.getLine();
+            op = BinaryOp.ExpOp;
             advance();
-            procFactor();
+            right = procFactor();
+
+            BinaryExpr binaryexpr = new BinaryExpr(line, left, op, right);
+            left = binaryexpr;
         }
 
+        expr = left;
         return expr;
     }
 
@@ -370,8 +409,14 @@ public class SyntaticAnalysis {
     // <factor> ::= [ '+' | '-' ] ( <const> | <input> | <access> ) [ <function> ] //duvida
     private Expr procFactor() throws LexicalException, IOException {
         Expr expr = null;
+        ConvOp op = null;
 
-        if (current.type == TokenType.ADD || current.type == TokenType.SUB) {
+        if (current.type == TokenType.ADD) {
+            op = ConvOp.PlusOp;
+            advance();
+        }
+        else if(current.type == TokenType.SUB){
+            op = ConvOp.MinusOp;
             advance();
         }
 
@@ -379,13 +424,26 @@ public class SyntaticAnalysis {
             expr = procConst();
         }
         else if (current.type == TokenType.GETS || current.type == TokenType.RAND){
-            procInput();
+            //expr = procInput();
         }
         else if (current.type == TokenType.ID || current.type == TokenType.OPEN_PAR){
-            procAccess();
+            //expr = procAccess();
         }
         else{
             showError();
+        }
+
+        if(current.type == TokenType.DOT){
+            FunctionExpr fexpr = null;
+            fexpr = procFunction(expr);
+            return fexpr;
+        }
+
+        int line = lex.getLine();
+        if(op != null){
+            ConvExpr convexpr = null;
+            convexpr = new ConvExpr(line,op,expr);
+            return convexpr;
         }
 
         return expr;
@@ -407,18 +465,32 @@ public class SyntaticAnalysis {
     }
 
     // <input> ::= gets | rand
-    private void procInput() throws LexicalException, IOException {
+    private Expr procInput() throws LexicalException, IOException {
+        Expr expr = null;
+        InputOp op = null;
+        int line = lex.getLine();
+        
         if (current.type == TokenType.GETS) {
+            line = lex.getLine();
+            op = InputOp.GetsOp;
             advance();
         } else if (current.type == TokenType.RAND) {
+            line = lex.getLine();
+            op = InputOp.RandOp;
             advance();
         } else {
             showError();
         }
+
+        InputExpr inputexpr = new InputExpr(line,op);
+        expr = inputexpr;
+        return expr;
     }
 
     // <array>    ::= '[' [ <expr> { ',' <expr> } ] ']'
-    private void procArray() throws LexicalException, IOException {
+    private ArrayExpr procArray() throws LexicalException, IOException {
+        ArrayExpr expr = null;
+
         eat(TokenType.OPEN_BRA);
 
         if (current.type == TokenType.ADD ||
@@ -440,33 +512,69 @@ public class SyntaticAnalysis {
         }
 
         eat(TokenType.CLOSE_BRA);
+
+        return expr;
     }
 
     // <access> ::= ( <id> | '(' <expr> ')' ) [ '[' <expr> ']' ]
-    private void procAccess() throws LexicalException, IOException {
-        if (current.type == TokenType.ID || current.type == TokenType.OPEN_PAR) {
-            procExpr();
+    private Expr procAccess() throws LexicalException, IOException {
+        Expr expr = null;
+        Expr index= null;
+        Expr base = null;
+        int line = lex.getLine();
+
+
+        if (current.type == TokenType.ID) {
+            advance();
+            base = procExpr();
+        } else if(current.type == TokenType.OPEN_PAR){
             eat(TokenType.CLOSE_PAR);
-        } else {
+        }
+        else {
             showError();
         }
 
         if (current.type == TokenType.OPEN_BRA) {
-            procExpr();
+            advance();
+
+            index = procExpr();
+
             eat(TokenType.CLOSE_BRA);
         }
+
+        AccessExpr accessexpr = new AccessExpr(line,base,index);
+        //AccessExpr(int line, Expr base, Expr index)
+        expr = accessexpr;
+        return expr;
 
     }
 
     // <function> ::= '.' ( length | to_i | to_s )
-    private void procFunction() throws LexicalException, IOException {
+    private FunctionExpr procFunction(Expr expr) throws LexicalException, IOException {
+        int line = lex.getLine();
+        FunctionOp op = null;
+        FunctionExpr fexpr = null;
+
         eat(TokenType.DOT);
-        if (current.type == TokenType.LENGTH || current.type == TokenType.TO_INT || current.type == TokenType.TO_STR) {
+        if (current.type == TokenType.LENGTH){
+            op = FunctionOp.LengthOp;
             advance();
-        } else {
+        } 
+        else if (current.type == TokenType.TO_INT){
+            op = FunctionOp.ToIntOp;
+            advance();
+        }
+        else if (current.type == TokenType.TO_STR){
+            op = FunctionOp.ToStringOp;
+            advance();
+        } 
+        else {
             showError();
         }
 
+        fexpr = new FunctionExpr(line,expr,op);
+
+        return fexpr;
     }
 
     private ConstExpr procInteger() throws LexicalException, IOException {

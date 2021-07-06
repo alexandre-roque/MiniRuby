@@ -4,7 +4,7 @@ import interpreter.value.Value;
 
 public abstract class SetExpr extends Expr{
 
-    protected SetExpr(int line) {
+    public SetExpr(int line) {
         super(line);
         //TODO 
     }
