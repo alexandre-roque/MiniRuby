@@ -13,8 +13,10 @@ public class WhileCommand extends Command {
     }
 
     @Override
-    public void execute() { //TODO
-        
+    public void execute() { 
+        while(cond.expr()){
+            cmds.execute();
+        }
     }
 
 }

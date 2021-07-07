@@ -9,10 +9,8 @@ public class NotBoolExpr extends BoolExpr{
     }
 
     @Override
-    public boolean expr(){ //TODO
-        boolean bool = false;
-
-        return bool;
+    public boolean expr(){
+        return (!expr.expr());
     }
 
 }

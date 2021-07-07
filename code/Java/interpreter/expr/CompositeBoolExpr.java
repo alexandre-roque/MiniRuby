@@ -1,11 +1,11 @@
 package interpreter.expr;
 
 public class CompositeBoolExpr extends BoolExpr{
-    private Expr left;
+    private BoolExpr left;
     private BoolOp op;
-    private Expr right;
+    private BoolExpr right;
 
-    public CompositeBoolExpr(int line, Expr left, BoolOp op, Expr right){
+    public CompositeBoolExpr(int line, BoolExpr left, BoolOp op, BoolExpr right){
         super(line);
         this.left = left;
         this.op = op;
@@ -13,10 +13,15 @@ public class CompositeBoolExpr extends BoolExpr{
     }
 
     @Override
-    public boolean expr(){ //TODO
-        boolean bool = false;
+    public boolean expr(){
+        switch(op){
+            case And:
+                return ((left.expr()) && (right.expr()));
+            case Or:
+            default:
+                return ((left.expr()) || (right.expr()));
 
-        return bool;
+        }
     }
     
 }

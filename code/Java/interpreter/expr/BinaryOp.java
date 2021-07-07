@@ -8,5 +8,5 @@ public enum BinaryOp {
     MultOp,
     DivOp,
     ModOp,
-    ExpOp;
+    ExpOp
 }

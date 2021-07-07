@@ -7,6 +7,6 @@ public enum RelOp {
     LowerEqualOp,
     GreaterThanOp,
     GreaterEqualOp,
-    ContainsOp;
+    ContainsOp
 
 }
