@@ -3,13 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/alexa/Documents/NetBeansProjects/TP1-LLP/src/interpreter/util/Utils.java</file>
-            <file>file:/C:/Users/alexa/Documents/NetBeansProjects/TP1-LLP/examples/teste.mrb</file>
-            <file>file:/C:/Users/alexa/Documents/NetBeansProjects/TP1-LLP/src/mrbi.java</file>
-            <file>file:/C:/Users/alexa/Documents/NetBeansProjects/TP1-LLP/src/interpreter/command/IfCommand.java</file>
-            <file>file:/C:/Users/alexa/Documents/NetBeansProjects/TP1-LLP/src/syntatic/SyntaticAnalysis.java</file>
-            <file>file:/C:/Users/alexa/Documents/NetBeansProjects/TP1-LLP/src/interpreter/expr/AccessExpr.java</file>
-            <file>file:/C:/Users/alexa/Documents/NetBeansProjects/TP1-LLP/src/interpreter/command/AssignCommand.java</file>
+            <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/interpreter/command/AssignCommand.java</file>
+            <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/interpreter/util/Utils.java</file>
+            <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/mrbi.java</file>
+            <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/syntatic/SyntaticAnalysis.java</file>
         </group>
     </open-files>
 </project-private>

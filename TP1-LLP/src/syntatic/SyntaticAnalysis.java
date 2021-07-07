@@ -79,13 +79,16 @@ public class SyntaticAnalysis {
 
         switch (current.type) {
             case INVALID_TOKEN:
+                try { throw new Exception(); } catch(Exception e) { e.printStackTrace(); }
                 System.out.printf("Lexema inválido [%s]\n", current.token);
                 break;
             case UNEXPECTED_EOF:
             case END_OF_FILE:
+                try { throw new Exception(); } catch(Exception e) { e.printStackTrace(); }
                 System.out.printf("Fim de arquivo inesperado\n");
                 break;
             default:
+                try { throw new Exception(); } catch(Exception e) { e.printStackTrace(); }
                 System.out.printf("Lexema não esperado [%s]\n", current.token);
                 break;
         }
@@ -457,7 +460,6 @@ public class SyntaticAnalysis {
         BinaryOp op = null;
 
         while (current.type == TokenType.ADD || current.type == TokenType.SUB) {
-            advance();
             if(current.type == TokenType.ADD){
                 op = BinaryOp.AddOp;
             }
@@ -467,7 +469,7 @@ public class SyntaticAnalysis {
             else{
                 showError();
             }
-
+            
             advance();
             right = procTerm();
             left = new BinaryExpr(line, left, op, right);
