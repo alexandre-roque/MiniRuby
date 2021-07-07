@@ -9,8 +9,8 @@ import interpreter.util.Utils;
 import interpreter.value.Value;
 
 public class AssignCommand extends Command{
-    private List<Expr> left;
-    private List<Expr> right;
+    private List<Expr> left = new ArrayList<>();
+    private List<Expr> right = new ArrayList<>();
 
     public AssignCommand(int line, List<Expr> left, List<Expr> right){
         super(line);
@@ -24,8 +24,7 @@ public class AssignCommand extends Command{
             Utils.abort(super.getLine());
         }
         else{
-            List<Value<?>> temp;
-            temp = new ArrayList<>();
+            List<Value<?>> temp = new ArrayList<>();
 
             for(Expr expr:right){
                 temp.add(expr.expr());
@@ -37,6 +36,7 @@ public class AssignCommand extends Command{
                     Utils.abort(super.getLine());
                 }
                 else{
+                    System.out.println("Estou aqui");
                     SetExpr sexpr = (SetExpr) expr;
                     sexpr.setValue(temp.get(i));
                 }
