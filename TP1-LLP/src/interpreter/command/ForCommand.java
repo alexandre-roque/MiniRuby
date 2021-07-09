@@ -26,22 +26,21 @@ public class ForCommand extends Command {
         Value<?> v = var.expr();
         if(expr.expr() instanceof ArrayValue){
             ArrayValue av = (ArrayValue)expr.expr();
-            for(Value<?> value: av.value()){
-                if(value instanceof IntegerValue && v instanceof IntegerValue){
-                    IntegerValue iv = (IntegerValue) v;
-                    int idValue = iv.value();
-                    IntegerValue iv2 = (IntegerValue) value;
-                    int valueDoArray = iv2.value();
-                    if(idValue > valueDoArray){
-                        for(int i = idValue; i < valueDoArray; i++){
-                            cmds.execute();
-                        }
-                    }
-                    else{
-                        for(int i = idValue; i > valueDoArray; i--){
-                            cmds.execute();
-                        }
-                    }
+            IntegerValue iv = (IntegerValue) av.value().get(0);
+            int inicio = iv.value();
+            IntegerValue iv2 = (IntegerValue) av.value().get(av.value().size() -1);
+            int fim = iv2.value();
+
+            if(inicio<fim){
+                for(int i = inicio; i<=fim; i++){
+                    this.var.setValue(new IntegerValue(i));
+                    cmds.execute();
+                }
+            }
+            else{
+                for(int i = inicio; i>=fim; i--){
+                    this.var.setValue(new IntegerValue(i));
+                    cmds.execute();
                 }
             }
         }

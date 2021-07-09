@@ -42,6 +42,7 @@ public class mrbi {
 
         } catch (Exception e) {
             System.err.println("Internal error: " + e.getMessage());
+            e.getStackTrace();
         }
     }
 

@@ -41,7 +41,7 @@ public class BinaryExpr extends Expr{
                         }
                     }
                     else{
-                        for(int i = valor2; i >= valor2; i--){
+                        for(int i = valor1; i >= valor2; i--){
                             IntegerValue auxI = new IntegerValue(i);
                             values.add(auxI);
                         }
@@ -56,7 +56,7 @@ public class BinaryExpr extends Expr{
                         }
                     }
                     else{
-                        for(int i = valor2; i > valor2; i--){
+                        for(int i = valor1; i > valor2; i--){
                             IntegerValue auxI = new IntegerValue(i);
                             values.add(auxI);
                         }
