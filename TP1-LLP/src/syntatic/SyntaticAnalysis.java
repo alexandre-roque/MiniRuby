@@ -144,21 +144,27 @@ public class SyntaticAnalysis {
 
     // <if>       ::= if <boolexpr> [ then ] <code> { elsif <boolexpr> [ then ] <code> } [ else <code> ] end
         private IfCommand procIf() throws LexicalException, IOException {
+            BlocksCommand thenCmds = null;
+            BlocksCommand thenCmdsElsfif = null;
             eat(TokenType.IF);
             BoolExpr cond =  procBoolExpr();          
             int line = lex.getLine();
             
             if (current.type == TokenType.THEN) {
                 advance();
+                thenCmds = procCode();
             }
-            BlocksCommand thenCmds = procCode();
     
             while (current.type == TokenType.ELSIF) {
+                eat(TokenType.ELSIF);
+                BoolExpr condElsif =  procBoolExpr();          
+                
                 if (current.type == TokenType.THEN) {
                     advance();
+                    thenCmdsElsfif = procCode();                    
                 }
                 
-                return (new IfCommand(line, cond, thenCmds, null));
+                IfCommand elsif = new IfCommand(line, condElsif, thenCmdsElsfif, null);
                 
             }
             
@@ -197,9 +203,9 @@ public class SyntaticAnalysis {
 
     // <while>    ::= while <boolexpr> [ do ] <code> end
     private WhileCommand procWhile() throws LexicalException, IOException {
-
+        int line = lex.getLine();
         eat(TokenType.WHILE);
-
+ 
         BoolExpr cond = procBoolExpr();
 
         if (current.type == TokenType.DO){
@@ -209,8 +215,6 @@ public class SyntaticAnalysis {
         BlocksCommand cmds = procCode();
         eat(TokenType.END);
 
-
-        int line = lex.getLine();
         return (new WhileCommand(line, cond, cmds));
     }
 
@@ -357,12 +361,12 @@ public class SyntaticAnalysis {
         
 
         if (current.type == TokenType.NOT) {
-            left = new NotBoolExpr(line,left);
             advance();
+            left = procCmpexpr();
+            left = new NotBoolExpr(line,left);
         }
         else{
             left = procCmpexpr();
-            advance();
         }
 
         if (current.type == TokenType.AND){
@@ -372,21 +376,16 @@ public class SyntaticAnalysis {
             op = BoolOp.Or;
             advance();
         } else {
-            showError();
+            return left;
         }
 
-        right = procBoolExpr();
-
-        bexpr = new CompositeBoolExpr(line, left, op, right);
-        return bexpr;
+        return (new CompositeBoolExpr(line, left, op, procBoolExpr()));
     }
 
     // <cmpexpr> ::= <expr> ( '==' | '!=' | '<' | '<=' | '>' | '>=' | '===' ) <expr>
     private BoolExpr procCmpexpr() throws LexicalException, IOException {
         RelOp op = null;
         Expr left = procExpr();
-        Expr right = null;
-        BoolExpr bexpr = null;
         int line = lex.getLine();
 
         if (current.type == TokenType.EQUALS){
@@ -413,12 +412,8 @@ public class SyntaticAnalysis {
         } else {
             showError();
         }
-        right = procExpr();
 
-        SingleBoolExpr sboolexpr = new SingleBoolExpr(line, left, op, right);
-        bexpr = sboolexpr;
-
-        return bexpr;
+        return (new SingleBoolExpr(line, left, op, procExpr()));
     }
 
     // <expr>     ::= <arith> [ ( '..' | '...' ) <arith> ]
@@ -429,16 +424,12 @@ public class SyntaticAnalysis {
         int line = lex.getLine();
         BinaryOp op = null;
 
-        if (current.type == TokenType.RANGE_WITH ||
-                current.type == TokenType.RANGE_WITHOUT) {
-            if(op == BinaryOp.RangeWithOp){
+        if (current.type == TokenType.RANGE_WITH || current.type == TokenType.RANGE_WITHOUT) {
+            if(current.type == TokenType.RANGE_WITH){
                 op = BinaryOp.RangeWithOp;
-            }
-
-            if(op == BinaryOp.RangeWithOp){
+            }else if(current.type == TokenType.RANGE_WITHOUT){
                 op = BinaryOp.RangeWithoutOp;
-            }
-            else{
+            } else{
                 showError();
             }
 

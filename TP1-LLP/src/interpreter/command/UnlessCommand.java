@@ -16,8 +16,13 @@ public class UnlessCommand extends Command{
     }
 
     @Override
-    public void execute() { //TODO
-        
+    public void execute() { 
+        if(cond.expr() == false){
+            thenCmds.execute();
+        }
+        else if(elseCmds != null){
+            elseCmds.execute();
+        }
     }
     
 }

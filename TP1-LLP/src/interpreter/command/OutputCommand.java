@@ -1,6 +1,7 @@
 package interpreter.command;
 
 import interpreter.expr.Expr;
+import interpreter.value.ArrayValue;
 import interpreter.value.IntegerValue;
 import interpreter.value.StringValue;
 import interpreter.value.Value;
@@ -25,7 +26,6 @@ public class OutputCommand extends Command {
     public void execute() {
         if (expr != null) {
             Value<?> v = expr.expr();
-    
             if (v instanceof IntegerValue) {
                 IntegerValue iv = (IntegerValue) v;
                 int n = iv.value();
@@ -34,8 +34,9 @@ public class OutputCommand extends Command {
                 StringValue sv = (StringValue) v;
                 String str = sv.value();
                 System.out.print(str);
-            } else {
-                System.out.print(v.toString());
+            } else if(v instanceof ArrayValue) {
+                ArrayValue av = (ArrayValue) v;
+                System.out.println(av.toString());
             }
         }
 

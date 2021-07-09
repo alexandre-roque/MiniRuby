@@ -1,5 +1,14 @@
 a = 5;
-b = 10;
-a, b = b, a;
+b = 0;
+
+c = 0;
+d = 1;
+
+while c==c do
+    a=a+1;
+    puts a; 
+end
+
+puts c;
 puts a;
-puts b;
+

@@ -22,7 +22,7 @@ public class ArrayValue extends Value<Vector<Value<?>>> {
         for (int i = 0; i < value.size(); i++) {
             Value<?> v = value.get(i);
             sb.append(i == 0 ? " " : ", ");
-            sb.append(v == null ? "" : v.toString());
+            sb.append(v == null ? "" : v.value().toString());
         }
         sb.append(" ]");
         return sb.toString();

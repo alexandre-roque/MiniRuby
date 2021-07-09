@@ -15,12 +15,17 @@ public class IfCommand extends Command{
     }
 
     public void setElseCommands(Command elseCommand){
-
+        this.elseCmds = elseCmds;
     }
 
     @Override
-    public void execute() { //TODO
-        
+    public void execute() { 
+        if(cond.expr() == true){
+            thenCmds.execute();
+        }
+        else if(this.elseCmds != null){
+            elseCmds.execute();
+        }
     }
     
 }

@@ -27,32 +27,14 @@ public class BinaryExpr extends Expr{
         Value<?> v2 = right.expr();
 
         if((left.expr() instanceof IntegerValue) && (right.expr() instanceof IntegerValue)){
-            IntegerValue iv1 = (IntegerValue) v1;
-            IntegerValue iv2 = (IntegerValue) v2;
-            int valor1, valor2;
-            valor1 = iv1.value();
-            valor2 = iv2.value();
-            Vector<Value<?>> values = new Vector<>();
+            int valor1 = ((IntegerValue) v1).value();
+            int valor2 = ((IntegerValue) v2).value();
+            Vector<Value<?>> values;
 
             switch (op) {
                 case RangeWithOp:
                     values = new Vector<>();
-                    if(valor1>valor2){
-                        for(int i = valor1; i < valor2; i++){
-                            IntegerValue auxI = new IntegerValue(i);
-                            values.add(auxI);
-                        }
-                    }
-                    else{
-                        for(int i = valor2; i > valor2; i--){
-                            IntegerValue auxI = new IntegerValue(i);
-                            values.add(auxI);
-                        }
-                    }
-                    return (new ArrayValue(values));
-                case RangeWithoutOp:
-                    values = new Vector<>();
-                    if(valor1>valor2){
+                    if(valor1<valor2){
                         for(int i = valor1; i <= valor2; i++){
                             IntegerValue auxI = new IntegerValue(i);
                             values.add(auxI);
@@ -60,6 +42,21 @@ public class BinaryExpr extends Expr{
                     }
                     else{
                         for(int i = valor2; i >= valor2; i--){
+                            IntegerValue auxI = new IntegerValue(i);
+                            values.add(auxI);
+                        }
+                    }
+                    return (new ArrayValue(values));
+                case RangeWithoutOp:
+                    values = new Vector<>();
+                    if(valor1<valor2){
+                        for(int i = valor1; i < valor2; i++){
+                            IntegerValue auxI = new IntegerValue(i);
+                            values.add(auxI);
+                        }
+                    }
+                    else{
+                        for(int i = valor2; i > valor2; i--){
                             IntegerValue auxI = new IntegerValue(i);
                             values.add(auxI);
                         }

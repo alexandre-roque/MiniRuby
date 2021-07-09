@@ -18,9 +18,9 @@ public class CompositeBoolExpr extends BoolExpr{
             case And:
                 return ((left.expr()) && (right.expr()));
             case Or:
-            default:
                 return ((left.expr()) || (right.expr()));
-
+            default:
+                return false;
         }
     }
     
