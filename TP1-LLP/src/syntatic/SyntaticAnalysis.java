@@ -144,18 +144,25 @@ public class SyntaticAnalysis {
 
     // <if>       ::= if <boolexpr> [ then ] <code> { elsif <boolexpr> [ then ] <code> } [ else <code> ] end
         private IfCommand procIf() throws LexicalException, IOException {
-            BlocksCommand thenCmds = null;
-            BlocksCommand thenCmdsElsfif = null;
+            int quantidadeIfs = 0;
+            ArrayList<IfCommand> ifscommands = new ArrayList<>();
+            
+            Command thenCmds = null;
+            Command thenCmdsElsfif = null;
+            Command elsecmds = null;
             eat(TokenType.IF);
             BoolExpr cond =  procBoolExpr();          
             int line = lex.getLine();
             
             if (current.type == TokenType.THEN) {
-                advance();
-                thenCmds = procCode();
+                eat(TokenType.THEN);
             }
+            
+            thenCmds = procCode();
+            IfCommand ifcmd = new IfCommand(line,cond,thenCmds,elsecmds);
     
             while (current.type == TokenType.ELSIF) {
+                int lineElsif = lex.getLine();
                 eat(TokenType.ELSIF);
                 BoolExpr condElsif =  procBoolExpr();          
                 
@@ -165,17 +172,28 @@ public class SyntaticAnalysis {
                 }
                 
                 IfCommand elsif = new IfCommand(line, condElsif, thenCmdsElsfif, null);
-                
+                ifscommands.add(elsif);
+                if(ifscommands.size() > 1){
+                    IfCommand aux = ifscommands.get(quantidadeIfs);
+                    ifscommands.get(quantidadeIfs-1).setElseCommands(aux);
+                }
+                quantidadeIfs++;
             }
             
             if(current.type == TokenType.ELSE){
                 advance();
-                BlocksCommand elseCmds = procCode();
-                return (new IfCommand(line, cond, thenCmds, elseCmds));
-
+                elsecmds = procCode();
             }
             
-            return (new IfCommand(line, cond, thenCmds, null));
+            if(ifscommands.isEmpty()){
+                ifcmd.setElseCommands(elsecmds);
+            }
+            else{
+                ifscommands.get(ifscommands.size()).setElseCommands(elsecmds);
+                ifcmd.setElseCommands(ifscommands.get(0));
+            }
+            
+            return ifcmd;
         }
 
     // <unless> ::= unless <boolexpr> [ then ] <code> [ else <code> ] end
