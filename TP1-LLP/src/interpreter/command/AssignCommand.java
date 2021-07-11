@@ -36,7 +36,6 @@ public class AssignCommand extends Command{
                     Utils.abort(super.getLine());
                 }
                 else{
-                    //System.out.println("Estou aqui");
                     SetExpr sexpr = (SetExpr) expr;
                     sexpr.setValue(temp.get(i));
                 }

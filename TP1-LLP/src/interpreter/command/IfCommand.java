@@ -18,10 +18,10 @@ public class IfCommand extends Command{
         this.elseCmds = elseCmds;
     }
 
-    public void setElseCommands(Command elseCommand){
+    public void setElseCmds(Command elseCmds) {
         this.elseCmds = elseCmds;
     }
-
+    
     @Override
     public void execute() { 
         if(cond.expr() == true){

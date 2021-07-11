@@ -4,7 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/mrbi.java</file>
+            <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/examples/teste.mrb</file>
             <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/interpreter/command/UntilCommand.java</file>
+            <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/interpreter/command/IfCommand.java</file>
             <file>file:/C:/Users/alexa/Documents/Repositorios/TP1-LP/TP1-LLP/src/syntatic/SyntaticAnalysis.java</file>
         </group>
     </open-files>

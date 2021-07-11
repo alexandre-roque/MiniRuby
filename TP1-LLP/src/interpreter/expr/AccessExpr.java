@@ -57,56 +57,58 @@ public class AccessExpr extends SetExpr{
         Value<?> v = this.base.expr();
         SetExpr sExpr = (SetExpr) base;
         if(this.index != null){
-            if(!(value instanceof ArrayValue)){
+            if(!(v instanceof ArrayValue)){
                 Utils.abort(super.getLine());
             }
             else{
-                int indexAux = 0;
-                Value<?> indexValue = this.index.expr();
-                Vector<Value<?>> values = (((ArrayValue) v).value());
-                if(indexValue instanceof IntegerValue || indexValue instanceof StringValue){
-                    indexAux = Integer.parseInt(indexValue.toString());
-
+                int indexNum = 0;
+                Value<?> indexValue  = this.index.expr();
+                Vector<Value<?>> values = ((ArrayValue) v).value();
+                if(indexValue instanceof StringValue){
+                    indexNum = Integer.parseInt(((StringValue)indexValue).value());
+                }
+                else if(indexValue instanceof IntegerValue){
+                    indexNum = ((IntegerValue)indexValue).value();
                 }
                 else{
                     Utils.abort(super.getLine());
                 }
-                if(indexAux >= values.size()){
-                    if(indexAux != values.size()){
-                        for(int i = values.size(); i <= indexAux; i++){
-                            if(indexAux != values.size()){
-                                values.add(new StringValue(""));
+                if(indexNum > values.size()){
+                    Utils.abort(super.getLine());
+                }
+                else{
+                    if(values.size() == indexNum){
+                        values.add(value);
+                    }
+                    else{
+                        for(int i = values.size(); i<= indexNum; i++){
+                            if(values.size() == indexNum){
+                                values.add(value);
                             }
                             else{
-                                values.add(value);
+                                values.add(new StringValue(""));
                             }
                         }
                     }
-                    else{
-                        values.add(value);
-                    }
                 }
-                else{
-                    values.set(indexAux, value);
-                }
-                sExpr.setValue(new ArrayValue(values));
             }
+            
         }
         else{
-            if(value instanceof StringValue){
-                StringValue sValue = new StringValue(((StringValue) v).value());
-                sExpr.setValue(sValue);
+            if(value instanceof IntegerValue){
+                sExpr.setValue((IntegerValue)value);
+            }
+            else if(value instanceof StringValue){
+                sExpr.setValue((StringValue)value);
             }
             else{
-                if(value instanceof IntegerValue){
-                    IntegerValue iValue = new IntegerValue(((IntegerValue)value).value());
-                    sExpr.setValue(iValue);
-                }
-                else{
-                    sExpr.setValue(value);
-                }
+                sExpr.setValue(value);
             }
         }
+        
+        
+        
+        
+        
     }
-    
 }

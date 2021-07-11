@@ -23,12 +23,9 @@ public class BinaryExpr extends Expr{
 
     @Override
     public Value<?> expr() {
-        Value<?> v1 = left.expr();
-        Value<?> v2 = right.expr();
-
         if((left.expr() instanceof IntegerValue) && (right.expr() instanceof IntegerValue)){
-            int valor1 = ((IntegerValue) v1).value();
-            int valor2 = ((IntegerValue) v2).value();
+            int valor1 = ((IntegerValue) left.expr()).value();
+            int valor2 = ((IntegerValue) right.expr()).value();
             Vector<Value<?>> values;
 
             switch (op) {
@@ -79,17 +76,12 @@ public class BinaryExpr extends Expr{
         }
 
         if((left.expr() instanceof StringValue) && (right.expr() instanceof StringValue)){
-            StringValue sv1 = (StringValue) v1;
-            StringValue sv2 = (StringValue) v2;
-            String s1, s2;
-            s1 = sv1.value();
-            s2 = sv2.value();
             switch (op) {
-                case AddOp: 
-                    return (new StringValue(s1.concat(s2)));
+                case AddOp:
+                    
+                    return (new StringValue(((StringValue) left.expr()).value().concat(((StringValue) right.expr()).value())));
             }
         }
-        
         return null;
     }
 }
