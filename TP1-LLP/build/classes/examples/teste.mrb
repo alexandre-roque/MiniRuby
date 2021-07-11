@@ -1,5 +1,8 @@
 x=5;
-for i in x..0
-    puts i;
+
+if x==0 then
+    puts 1;
+elsif x==5 then
+    puts 2;
 end
 

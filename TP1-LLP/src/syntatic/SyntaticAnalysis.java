@@ -157,13 +157,12 @@ public class SyntaticAnalysis {
             if (current.type == TokenType.THEN) {
                 eat(TokenType.THEN);
             }
-            
+
             thenCmds = procCode();
-            IfCommand ifcmd = new IfCommand(line,cond,thenCmds,elsecmds);
-    
+
             while (current.type == TokenType.ELSIF) {
-                int lineElsif = lex.getLine();
                 eat(TokenType.ELSIF);
+                
                 BoolExpr condElsif =  procBoolExpr();          
                 
                 if (current.type == TokenType.THEN) {
@@ -174,25 +173,30 @@ public class SyntaticAnalysis {
                 IfCommand elsif = new IfCommand(line, condElsif, thenCmdsElsfif, null);
                 ifscommands.add(elsif);
                 if(ifscommands.size() > 1){
-                    IfCommand aux = ifscommands.get(quantidadeIfs);
+                    System.out.println(quantidadeIfs-1);
+                    IfCommand aux = ifscommands.get(quantidadeIfs-1);
                     ifscommands.get(quantidadeIfs-1).setElseCommands(aux);
                 }
                 quantidadeIfs++;
             }
+
             
             if(current.type == TokenType.ELSE){
                 advance();
                 elsecmds = procCode();
             }
             
+            IfCommand ifcmd = new IfCommand(line,cond,thenCmds,elsecmds);
+            
             if(ifscommands.isEmpty()){
                 ifcmd.setElseCommands(elsecmds);
             }
             else{
+                System.out.println("Estou aqui");
                 ifscommands.get(ifscommands.size()).setElseCommands(elsecmds);
                 ifcmd.setElseCommands(ifscommands.get(0));
             }
-            
+            advance();
             return ifcmd;
         }
 

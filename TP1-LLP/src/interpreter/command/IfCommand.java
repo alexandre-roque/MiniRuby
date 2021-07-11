@@ -6,6 +6,10 @@ public class IfCommand extends Command{
     private BoolExpr cond;
     private Command thenCmds;
     private Command elseCmds;
+    
+    public Command getElseCmds() {
+        return elseCmds;
+    }
 
     public IfCommand(int line, BoolExpr cond, Command thenCmds, Command elseCmds){
         super(line);
