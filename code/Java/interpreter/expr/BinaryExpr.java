@@ -100,7 +100,6 @@ public class BinaryExpr extends Expr{
             Utils.abort(super.getLine());
             return null;
         }
-        
         return null;
     }
 }
