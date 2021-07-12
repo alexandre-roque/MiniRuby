@@ -634,7 +634,7 @@ public class SyntaticAnalysis {
     // <array>    ::= '[' [ <expr> { ',' <expr> } ] ']'
     private ArrayExpr procArray() throws LexicalException, IOException {
         int line = lex.getLine();
-        Vector<Expr> exprs = null;
+        Vector<Expr> exprs = new Vector<>();
 
         eat(TokenType.OPEN_BRA);
 

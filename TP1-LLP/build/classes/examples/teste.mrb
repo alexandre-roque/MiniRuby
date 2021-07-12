@@ -1,7 +1,4 @@
-min = 10;
-max = 5;
+min = 5..10;
+puts min[2];
 
-max, min = min, max if max<min;
 
-puts max;
-puts min;

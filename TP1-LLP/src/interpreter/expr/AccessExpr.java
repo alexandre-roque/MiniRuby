@@ -25,31 +25,23 @@ public class AccessExpr extends SetExpr{
     public Value<?> expr() {
         Value<?> value = base.expr();
         if(this.index == null){
-            if(value instanceof ArrayValue){
-                Utils.abort(super.getLine());
-            }
-            else{
-                return value;
-            }
+            return value;
         }
         else{
-            if(value instanceof ArrayValue){
-                Utils.abort(super.getLine());
+            int indexAux = 0;
+            Value<?> indexValue = this.index.expr();
+            Vector<Value<?>> values = (((ArrayValue) value).value());
+            if(indexValue instanceof StringValue){
+                indexAux = Integer.parseInt(((StringValue)indexValue).value());
+            }
+            if(indexValue instanceof IntegerValue){
+                indexAux = ((IntegerValue) indexValue).value();
             }
             else{
-                int indexAux = 0;
-                Value<?> indexValue = this.index.expr();
-                Vector<Value<?>> values = (((ArrayValue) value).value());
-                if(indexValue instanceof StringValue || indexValue instanceof IntegerValue){
-                    indexAux = Integer.parseInt(indexValue.toString());
-                }
-                else{
-                    Utils.abort(super.getLine());
-                }
-                return values.get(indexAux);
+                Utils.abort(super.getLine());
             }
+            return values.get(indexAux);
         }
-        return value;
     }
 
     @Override
@@ -73,8 +65,8 @@ public class AccessExpr extends SetExpr{
                 else{
                     Utils.abort(super.getLine());
                 }
-                if(indexNum > values.size()){
-                    Utils.abort(super.getLine());
+                if(indexNum < values.size()){
+                    values.set(indexNum, value);
                 }
                 else{
                     if(values.size() == indexNum){
