@@ -1,5 +1,6 @@
 package interpreter.expr;
 
+import interpreter.util.Utils;
 import java.util.Vector;
 
 import interpreter.value.ArrayValue;
@@ -73,17 +74,13 @@ public class BinaryExpr extends Expr{
                     default:
                         return (new IntegerValue(valor1^valor2));                         
             }
-        }
-
-        if((left.expr() instanceof StringValue) && (right.expr() instanceof StringValue)){
+        }else if((left.expr() instanceof StringValue) && (right.expr() instanceof StringValue)){
             switch (op) {
                 case AddOp:
                     //Concatenação de Strings
                     return (new StringValue(((StringValue) left.expr()).value().concat(((StringValue) right.expr()).value())));
             }
-        }
-        
-        if((left.expr() instanceof ArrayValue) && (right.expr() instanceof ArrayValue)){
+        }else if((left.expr() instanceof ArrayValue) && (right.expr() instanceof ArrayValue)){
             switch (op) {
                 case AddOp:
                     Vector<Value<?>> vetor1 = ((ArrayValue) left.expr()).value();
@@ -98,6 +95,10 @@ public class BinaryExpr extends Expr{
                     } 
                     return (new ArrayValue(vetor3));
             }
+        }
+        else{
+            Utils.abort(super.getLine());
+            return null;
         }
         
         return null;
