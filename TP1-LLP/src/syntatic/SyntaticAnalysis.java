@@ -1,8 +1,41 @@
 package syntatic;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
+import interpreter.command.AssignCommand;
+import interpreter.command.BlocksCommand;
 import interpreter.command.Command;
+import interpreter.command.ForCommand;
+import interpreter.command.IfCommand;
+import interpreter.command.OutputCommand;
+import interpreter.command.OutputOp;
+import interpreter.command.UnlessCommand;
+import interpreter.command.UntilCommand;
+import interpreter.command.WhileCommand;
+import interpreter.expr.AccessExpr;
+import interpreter.expr.ArrayExpr;
+import interpreter.expr.BinaryExpr;
+import interpreter.expr.BinaryOp;
+import interpreter.expr.BoolExpr;
+import interpreter.expr.BoolOp;
+import interpreter.expr.CompositeBoolExpr;
+import interpreter.expr.ConstExpr;
+import interpreter.expr.ConvExpr;
+import interpreter.expr.ConvOp;
+import interpreter.expr.Expr;
+import interpreter.expr.FunctionExpr;
+import interpreter.expr.FunctionOp;
+import interpreter.expr.InputExpr;
+import interpreter.expr.InputOp;
+import interpreter.expr.NotBoolExpr;
+import interpreter.expr.RelOp;
+import interpreter.expr.SingleBoolExpr;
+import interpreter.expr.Variable;
+import interpreter.value.IntegerValue;
+import interpreter.value.StringValue;
 import lexical.Lexeme;
 import lexical.LexicalAnalysis;
 import lexical.LexicalException;
@@ -19,7 +52,10 @@ public class SyntaticAnalysis {
     }
 
     public Command start() throws LexicalException, IOException {
-        return null;
+        Command cmd = procCode();
+        eat(TokenType.END_OF_FILE);
+    
+        return cmd;
     }
 
     private void advance() throws LexicalException, IOException {
@@ -60,8 +96,6 @@ public class SyntaticAnalysis {
         System.exit(1);
     }
 
-<<<<<<< Updated upstream
-=======
     // <code>     ::= { <cmd> }
     private BlocksCommand procCode() throws LexicalException, IOException {
         int line = lex.getLine();
@@ -725,5 +759,4 @@ public class SyntaticAnalysis {
         return (new Variable(line,str));
     }
 
->>>>>>> Stashed changes
 }

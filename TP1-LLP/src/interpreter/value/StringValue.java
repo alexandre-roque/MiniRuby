@@ -8,16 +8,14 @@ public class StringValue extends Value<String> {
         this.value = value;
     }
 
+    @Override
     public String value() {
         return value;
     }
 
-<<<<<<< Updated upstream
-=======
     @Override
     public String toString() {
         return value;
     }
->>>>>>> Stashed changes
 }
     // Feito em sala
