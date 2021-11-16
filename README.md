@@ -1,5 +1,6 @@
 # TP1-LP
 Primeiro trabalho de Linguagem de Programação miniRuby:</p> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Ruby_logo.svg/1200px-Ruby_logo.svg.png" min-width="200x" max-width="200px" width="200px" align="right" alt="RUBY"></a> 
+![Ruby](https://img.shields.io/badge/ruby-%23CC342D.svg?style=for-the-badge&logo=ruby&logoColor=white)
 O objetivo desse trabalho é desenvolver um interpretador para um subconjunto de uma linguagem de programação conhecida. Para isso foi criada	
 miniRuby, uma linguagem	de programação de brinquedo baseada em Ruby.</p>
 Integrantes do grupo:
